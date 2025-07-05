@@ -47,7 +47,10 @@ $conn->close();
         <div class="card-section">
             <h2>Mis Resultados</h2>
             <h3 style="margin: 16px; color: #27ae60;">Tu Progreso</h3>
-            
+
+            <!-- Gráfica de peso -->
+            <canvas id="graficaPeso" style="max-width:100%;height:260px;margin-bottom:24px;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);"></canvas>
+
             <?php if (!empty($resultados)): ?>
                 <?php foreach ($resultados as $resultado): ?>
                     <div class="resultado-item">
@@ -88,10 +91,27 @@ $conn->close();
         </div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function toggleMenu() {
             var sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('menu-abierto');
+        }
+
+        const datosPeso = <?php
+            $pesos = [];
+            $fechas = [];
+            foreach (array_reverse($resultados) as $r) {
+                if (!empty($r['peso'])) {
+                    $pesos[] = (float)$r['peso'];
+                    $fechas[] = date('d/m', strtotime($r['fecha']));
+                }
+            }
+            echo json_encode(['fechas'=>$fechas,'pesos'=>$pesos]);
+        ?>;
+        if (datosPeso.pesos.length){
+            const ctx = document.getElementById('graficaPeso').getContext('2d');
+            new Chart(ctx,{type:'line',data:{labels:datosPeso.fechas,datasets:[{label:'Peso (kg)',data:datosPeso.pesos,fill:false,borderColor:'#0074D9',tension:0.3}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:false}}}});
         }
     </script>
 </body>
