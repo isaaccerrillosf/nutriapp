@@ -1,0 +1,105 @@
+MEMORIAS DE DESARROLLO - APLICACIÓN NUTRIAPP
+==============================================
+
+FECHA: Diciembre 2024
+PROYECTO: Sistema de Nutrición con roles Admin, Nutriólogo y Cliente
+
+HISTORIAL DE MODIFICACIONES:
+============================
+
+1. CENTRALIZACIÓN DE CSS Y ELIMINACIÓN DE MENÚS HAMBURGUESA
+------------------------------------------------------------
+- Se centralizó el CSS y se eliminaron estilos locales
+- Se crearon headers y menús/carruseles separados por rol (admin, nutriólogo, cliente)
+- Se implementó integración responsiva y diseño moderno
+- Se eliminaron todos los menús hamburguesa y overlays de todas las vistas y roles
+
+2. OPTIMIZACIÓN DE MENÚS Y NAVEGACIÓN
+--------------------------------------
+- Se eliminó del menú lateral del nutriólogo las opciones de Dieta y Rutina
+- Se ajustó el carrusel móvil para mejor usabilidad
+- Se implementó navegación más intuitiva y profesional
+
+3. FUNCIONALIDAD DE ASIGNACIÓN DE CANTIDADES
+---------------------------------------------
+- Se implementó que el nutriólogo pueda asignar cantidades específicas (100g, 200g, 300g, 500g, 1 pieza) a cada alimento
+- Se modificó la base de datos: ALTER TABLE plan_alimentos ADD COLUMN cantidad VARCHAR(10) NOT NULL DEFAULT '100g'
+- Se guarda la cantidad en la base de datos para cada alimento asignado
+
+4. VISUALIZACIÓN MEJORADA DE PLANES NUTRICIONALES
+--------------------------------------------------
+- Se modificó plan_nutricional.php para mostrar la dieta completa
+- Se agrupa por comidas: Desayuno, Snack1, Comida, Snack2 y Cena
+- Se muestran cantidades, calorías por alimento, suma por comida y total diario
+- Se agregó menú inferior tipo tabs para filtrar la visualización por comida
+- Se agregaron links a plan_nutricional.php en los menús laterales y carruseles de cliente y nutriólogo
+
+5. SEPARACIÓN DE VISTAS DEL CLIENTE
+-----------------------------------
+- Se separó la visualización de la dieta del cliente del dashboard principal (cliente_dashboard.php)
+- Se movió a una página independiente (plan_nutricional.php) para gestión más profesional
+- Se crearon páginas independientes para rutina (cliente_rutina.php) y resultados (cliente_resultados.php)
+- Se actualizaron los menús laterales y carruseles móviles para incluir enlaces a estas nuevas páginas
+- Se simplificó el dashboard del cliente para mostrar solo información general y accesos rápidos
+
+6. OPTIMIZACIÓN DEL CARRUSEL MÓVIL
+-----------------------------------
+- Se cambió el menú carrusel para que sea más enfocado
+- Se eliminaron opciones sin páginas específicas
+- Se actualizó el carrusel móvil del cliente para incluir solo las funcionalidades principales con páginas dedicadas
+
+7. CORRECCIÓN DEL FLUJO DE ASIGNACIÓN
+-------------------------------------
+- Se revisó que el flujo de asignación de planes nutricionales desde el nutriólogo hacia el cliente funcione correctamente
+- Se detectó que solo asignaba Desayuno, Comida y Cena, mientras que el cliente veía también Snack1 y Snack2
+- Se actualizó la página del nutriólogo para incluir Snack1 y Snack2 en la asignación
+- Se mejoró la visualización en la página del cliente para mostrar las cantidades asignadas y el total de calorías por comida
+- Se verificó que la base de datos tiene la estructura correcta para soportar estos cambios
+- El sistema quedó con un flujo completo y consistente, con interfaz mejorada y navegación clara y profesional
+
+8. FUNCIONALIDAD DE EDICIÓN DE PLANES Y RUTINAS
+-----------------------------------------------
+- Se creó nutriologo_editar_plan.php para editar planes nutricionales existentes
+- Se creó nutriologo_editar_rutina.php para editar rutinas de ejercicios existentes
+- Se agregaron botones de edición en las tarjetas de planes y rutinas
+- Se mantiene la funcionalidad completa de edición con cantidades, series y repeticiones
+- Se verifica que solo el nutriólogo asignado pueda editar los planes/rutinas
+
+9. SISTEMA DE NOTIFICACIONES PARA RENOVACIÓN MENSUAL
+----------------------------------------------------
+- Se implementó sistema de notificaciones en nutriologo_clientes.php
+- Se avisa al nutriólogo 5 días antes de cumplir 30 días tanto para dieta como rutina
+- Se muestran notificaciones en las tarjetas de clientes con colores diferenciados:
+  * Amarillo: Advertencia (25-29 días)
+  * Rojo: Urgente (30+ días)
+- Se muestra el número de días transcurridos para cada tipo de plan
+- Se actualizó la base de datos agregando columna fecha_registro a la tabla rutinas
+
+ESTADO ACTUAL DEL SISTEMA:
+==========================
+✅ Sistema completo de roles (Admin, Nutriólogo, Cliente)
+✅ Gestión de clientes y asignaciones
+✅ Planes nutricionales con cantidades específicas
+✅ Rutinas de ejercicios con series y repeticiones
+✅ Sistema de citas
+✅ Seguimiento de resultados
+✅ Edición de planes y rutinas existentes
+✅ Notificaciones automáticas para renovación mensual
+✅ Interfaz responsiva y moderna
+✅ Navegación intuitiva y profesional
+
+PRÓXIMAS MEJORAS SUGERIDAS:
+===========================
+- Sistema de recordatorios por email
+- Dashboard con estadísticas avanzadas
+- Sistema de mensajería interna
+- Reportes automáticos de progreso
+- Integración con dispositivos wearables
+
+NOTAS TÉCNICAS:
+===============
+- Base de datos: MySQL con tablas relacionadas
+- Frontend: HTML5, CSS3, JavaScript responsivo
+- Backend: PHP con sesiones seguras
+- Estructura modular con includes para headers y menús
+- Diseño mobile-first con breakpoints para diferentes dispositivos 

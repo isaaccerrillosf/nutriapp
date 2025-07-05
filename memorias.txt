@@ -1,0 +1,54 @@
+MEMORIAS NUTRIAPP - Diciembre 2024
+==================================
+
+DESARROLLO COMPLETADO:
+=====================
+
+1. CENTRALIZACIÓN CSS Y MENÚS
+- CSS centralizado, eliminados menús hamburguesa
+- Headers y carruseles por rol (admin, nutriólogo, cliente)
+- Diseño responsivo y moderno
+
+2. ASIGNACIÓN DE CANTIDADES
+- Nutriólogo puede asignar cantidades (100g, 200g, 300g, 500g, 1 pieza)
+- Base de datos: ALTER TABLE plan_alimentos ADD COLUMN cantidad VARCHAR(10)
+- Visualización con cantidades y calorías totales
+
+3. SEPARACIÓN DE VISTAS CLIENTE
+- plan_nutricional.php independiente del dashboard
+- cliente_rutina.php y cliente_resultados.php separados
+- Dashboard simplificado con accesos rápidos
+
+4. FLUJO COMPLETO DE ASIGNACIÓN
+- Incluye Snack1 y Snack2 en asignación
+- Visualización completa por comidas
+- Menú tabs para filtrar por comida
+
+5. EDICIÓN DE PLANES Y RUTINAS
+- nutriologo_editar_plan.php - Editar planes nutricionales
+- nutriologo_editar_rutina.php - Editar rutinas de ejercicios
+- Botones de edición en tarjetas existentes
+
+6. NOTIFICACIONES DE RENOVACIÓN
+- Avisa 5 días antes de cumplir 30 días
+- Notificaciones en tarjetas de clientes
+- Colores: amarillo (advertencia), rojo (urgente)
+- Base de datos: fecha_registro en tabla rutinas
+
+ESTADO ACTUAL:
+==============
+✅ Sistema completo funcional
+✅ Roles: Admin, Nutriólogo, Cliente
+✅ Gestión completa de planes y rutinas
+✅ Edición de contenido existente
+✅ Notificaciones automáticas
+✅ Interfaz responsiva y profesional
+
+ARCHIVOS PRINCIPALES:
+====================
+- nutriologo_editar_plan.php (NUEVO)
+- nutriologo_editar_rutina.php (NUEVO)
+- nutriologo_clientes.php (MODIFICADO - notificaciones)
+- nutriologo_plan.php (MODIFICADO - botones editar)
+- nutriologo_rutina.php (MODIFICADO - botones editar)
+- nutriapp.sql (MODIFICADO - fecha_registro) 
