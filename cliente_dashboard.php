@@ -1,4 +1,4 @@
-THIS SHOULD BE A LINTER ERROR<?php
+<?php
 session_start();
 if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'cliente') {
     header('Location: login.php');
@@ -477,6 +477,13 @@ function dias_restantes($fecha_cita) {
             .food-icon { width: 44px; height: 44px; font-size: 1.5em; }
             .food-label { font-size: 0.92em; }
         }
+        /* Estilos tarjetas dashboard */
+        .dashboard-cards { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin-bottom:32px; }
+        .dashboard-card { background:#fff; border-radius:18px; padding:22px 20px; width:220px; box-shadow:0 4px 16px rgba(0,0,0,0.08); border:1.5px solid #e6ecf3; text-align:center; }
+        .card-title { font-size:1em; font-weight:600; color:#0074D9; margin-bottom:8px; }
+        .card-value { font-size:1.9em; font-weight:700; color:#23272f; }
+        .card-sub { font-size:0.8em; }
+        @media(max-width:600px){ .dashboard-card{width:160px;padding:18px 12px;} .card-value{font-size:1.5em;} }
     </style>
 </head>
 <body>
@@ -485,6 +492,38 @@ function dias_restantes($fecha_cita) {
     
     <main class="cliente-main">
         <div class="bienvenida-cliente">Bienvenido, <?= htmlspecialchars($_SESSION['usuario_nombre']) ?></div>
+
+        <!-- Tarjetas de resumen -->
+        <div class="dashboard-cards">
+            <div class="dashboard-card">
+                <div class="card-title">Próximo entrenamiento</div>
+                <div class="card-value"><?= htmlspecialchars($next_workout) ?></div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-title">Calorías de hoy</div>
+                <div class="card-value"><?= is_numeric($calorias_hoy) ? $calorias_hoy.' kcal' : $calorias_hoy ?></div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-title">Peso corporal</div>
+                <div class="card-value">
+                    <?php if($peso_actual !== null): ?>
+                        <?= $peso_actual ?> kg
+                        <?php if($peso_diff !== null): ?>
+                            <span class="card-sub" style="display:block; color:<?= $peso_diff==0?'#9aa5b1':($peso_diff<0?'#27ae60':'#e74c3c'); ?>; font-size:0.75em;">
+                                <?= $peso_diff>0?'+':'' ?><?= number_format($peso_diff,1) ?> kg desde última medición
+                            </span>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        —
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-title">Racha activa</div>
+                <div class="card-value"><?= $racha_dias ?> días</div>
+            </div>
+        </div>
+
         <section class="card-section panel-control">
             <h2>Panel de Control</h2>
             <ul>
