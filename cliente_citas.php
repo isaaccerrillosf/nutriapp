@@ -44,6 +44,41 @@ while ($row = $result->fetch_assoc()) {
     $historial_citas[] = $row;
 }
 $stmt->close();
+// Obtener dias de rutina
+$rutina_dias=[];
+$stmt = $conn->prepare('SELECT DISTINCT dia_semana FROM rutinas WHERE cliente_id = ?');
+$stmt->bind_param('i', $cliente_id);
+$stmt->execute();
+$resDias=$stmt->get_result();
+while($r=$resDias->fetch_assoc()){ $rutina_dias[]=$r['dia_semana']; }
+$stmt->close();
+
+// Generar eventos en rango de 30 dias
+$events=[];
+// citas futuras y pasadas (solo futuras contadas)
+foreach($proximas_citas as $c){
+    $events[]=[
+        'title'=>'Cita Nutriólogo',
+        'start'=>$c['fecha_cita'],
+        'color'=>'#e67e22'
+    ];
+}
+// rutinas
+$diaMap=['Lunes'=>1,'Martes'=>2,'Miércoles'=>3,'Jueves'=>4,'Viernes'=>5,'Sábado'=>6,'Domingo'=>0];
+$startDate=new DateTime();$endDate=(clone $startDate)->modify('+30 days');
+$period=new DatePeriod($startDate,new DateInterval('P1D'),$endDate);
+foreach($period as $day){
+    $index=intval($day->format('N')); // 1-7
+    $espMap=[1=>'Lunes',2=>'Martes',3=>'Miércoles',4=>'Jueves',5=>'Viernes',6=>'Sábado',7=>'Domingo'];
+    $diaEsp=$espMap[$index];
+    if(in_array($diaEsp,$rutina_dias)){
+        $events[]=[
+            'title'=>'Entrenamiento',
+            'start'=>$day->format('Y-m-d'),
+            'color'=>'#27ae60'
+        ];
+    }
+}
 $conn->close();
 function dias_restantes($fecha_cita) {
     $ahora = new DateTime();
@@ -60,6 +95,8 @@ function dias_restantes($fecha_cita) {
     <title>Mis Citas</title>
     <link rel="stylesheet" href="css/estilos.css">
     <link rel="stylesheet" href="css/cliente.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <style>
         body {
             background: #f4f8fb;
@@ -296,6 +333,9 @@ function dias_restantes($fecha_cita) {
 <?php include 'cliente_carrusel.php'; ?>
 <main class="cliente-main">
     <h1 style="color:#0074D9;font-size:2.3rem;font-weight:700;margin-bottom:28px;">Mis Citas</h1>
+    <div class="card-section" style="max-width:1000px;">
+        <div id="calendar"></div>
+    </div>
     <div class="card-section">
         <?php if ($mensaje): ?>
             <p style="color:#27ae60; text-align: center; margin-bottom: 20px;"> <?= $mensaje ?> </p>
@@ -366,5 +406,14 @@ function dias_restantes($fecha_cita) {
         </div>
     </div>
 </main>
+<script>
+ document.addEventListener('DOMContentLoaded',function(){
+   var calendarEl=document.getElementById('calendar');
+   if(calendarEl){
+     var calendar=new FullCalendar.Calendar(calendarEl,{initialView:'dayGridMonth',locale:'es',height:600,headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,timeGridWeek'},events:<?= json_encode($events) ?>});
+     calendar.render();
+   }
+ });
+</script>
 </body>
 </html> 
