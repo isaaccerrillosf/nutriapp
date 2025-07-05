@@ -301,6 +301,7 @@ $conn->close();
                                     <div class="<?= $ejercicio_completado ? 'estado-completado' : 'estado-pendiente' ?>">
                                         <?= $ejercicio_completado ? '✅ Completado' : '⏳ Pendiente' ?>
                                     </div>
+                                    <button class="add-set-btn" onclick="agregarSerie(this)" data-rutina-id="<?= $rutina['id'] ?>" data-ejercicio-id="<?= $ejercicio['ejercicio_id'] ?>" style="margin-left:8px;background:#0074D9;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:0.8em;cursor:pointer;">➕ Set</button>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -411,6 +412,14 @@ $conn->close();
             if (barraProgreso) {
                 barraProgreso.style.width = `${porcentaje}%`;
             }
+        }
+
+        function agregarSerie(btn){
+            const peso=prompt('Peso (kg):');
+            if(peso===null)return;const reps=prompt('Repeticiones:');if(reps===null)return;
+            const rutinaId=btn.dataset.rutinaId;const ejercicioId=btn.dataset.ejercicioId;
+            const formData=new FormData();formData.append('rutina_id',rutinaId);formData.append('ejercicio_id',ejercicioId);formData.append('peso',peso);formData.append('repeticiones',reps);
+            fetch('registrar_serie.php',{method:'POST',body:formData}).then(r=>r.json()).then(d=>{if(d.success){alert('Serie guardada');}else{alert('Error: '+(d.error||'No se guardó'));}}).catch(()=>alert('Error de conexión'));
         }
     </script>
 </body>

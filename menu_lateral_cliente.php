@@ -11,6 +11,7 @@ $nombre = $_SESSION['usuario_nombre'] ?? '';
         <a class="menu-link<?= basename($_SERVER['PHP_SELF'])=='cliente_dieta.php'?' active':'' ?>" href="cliente_dieta.php"><span>🍽️</span><span>Dieta</span></a>
         <a class="menu-link<?= basename($_SERVER['PHP_SELF'])=='cliente_rutina.php'?' active':'' ?>" href="cliente_rutina.php"><span>💪</span><span>Rutina</span></a>
         <a class="menu-link<?= basename($_SERVER['PHP_SELF'])=='cliente_resultados.php'?' active':'' ?>" href="cliente_resultados.php"><span>📊</span><span>Resultados</span></a>
+        <a class="menu-link<?= basename($_SERVER['PHP_SELF'])=='cliente_ejercicios.php'?' active':'' ?>" href="cliente_ejercicios.php"><span>📚</span><span>Ejercicios</span></a>
         <a class="logout-link menu-link" href="logout.php"><span>🚪</span><span>Salir</span></a>
     </div>
 </nav> 

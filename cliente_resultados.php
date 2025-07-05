@@ -28,6 +28,24 @@ while ($row = $resultados_result->fetch_assoc()) {
 }
 $stmt->close();
 
+// Cálculo volumen semanal
+$volumenSemanal = [];
+$labelsSem = [];
+$connSeg=new mysqli($host,$user,$pass,$db);
+if(!$connSeg->connect_error){
+    $cliente=$cliente_id ?? $_SESSION['usuario_id'];
+    $stmt=$connSeg->prepare('SELECT fecha_ejercicio, series_completadas FROM seguimiento_ejercicios WHERE cliente_id=? AND completado=1 ORDER BY fecha_ejercicio DESC LIMIT 500');
+    $stmt->bind_param('i',$cliente);
+    $stmt->execute();$res=$stmt->get_result();
+    while($r=$res->fetch_assoc()){
+        $week=date('o-W',strtotime($r['fecha_ejercicio']));
+        $volumenSemanal[$week]=($volumenSemanal[$week]??0)+(int)$r['series_completadas'];
+    }
+    ksort($volumenSemanal);
+    foreach($volumenSemanal as $sem=>$val){$labelsSem[]=$sem;}
+    $stmt->close();$connSeg->close();
+}
+
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -50,6 +68,9 @@ $conn->close();
 
             <!-- Gráfica de peso -->
             <canvas id="graficaPeso" style="max-width:100%;height:260px;margin-bottom:24px;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);"></canvas>
+
+            <!-- Gráfica de volumen -->
+            <canvas id="graficaVolumen" style="max-width:100%;height:260px;margin-bottom:24px;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);"></canvas>
 
             <?php if (!empty($resultados)): ?>
                 <?php foreach ($resultados as $resultado): ?>
@@ -112,6 +133,13 @@ $conn->close();
         if (datosPeso.pesos.length){
             const ctx = document.getElementById('graficaPeso').getContext('2d');
             new Chart(ctx,{type:'line',data:{labels:datosPeso.fechas,datasets:[{label:'Peso (kg)',data:datosPeso.pesos,fill:false,borderColor:'#0074D9',tension:0.3}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:false}}}});
+        }
+
+        // Volumen semanal chart
+        const datosVol = {labels:<?= json_encode(array_values($labelsSem)) ?>, data:<?= json_encode(array_values($volumenSemanal)) ?>};
+        if (datosVol.labels.length){
+            const ctxVol=document.getElementById('graficaVolumen').getContext('2d');
+            new Chart(ctxVol,{type:'bar',data:{labels:datosVol.labels,datasets:[{label:'Series completadas',data:datosVol.data,backgroundColor:'#27ae60'}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
         }
     </script>
 </body>
