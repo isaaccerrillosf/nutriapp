@@ -19,4 +19,17 @@ $nombre = $_SESSION['usuario_nombre'] ?? '';
 <!-- Botón de menú hamburguesa para móvil -->
 <button class="hamburger-menu" onclick="toggleMenu()" style="display: none;">
     ☰
-</button> 
+</button>
+
+<link rel="stylesheet" href="css/cliente-ui.css">
+
+<!-- Bottom navigation for mobile -->
+<nav class="bottom-bar">
+    <div class="bottom-bar-icons">
+        <a href="cliente_dashboard.php" class="<?= basename($_SERVER['PHP_SELF'])=='cliente_dashboard.php'?'active':'' ?>">🏠</a>
+        <a href="cliente_rutina.php" class="<?= basename($_SERVER['PHP_SELF'])=='cliente_rutina.php'?'active':'' ?>">💪</a>
+        <a href="cliente_dieta.php" class="<?= basename($_SERVER['PHP_SELF'])=='cliente_dieta.php'?'active':'' ?>">🍽️</a>
+        <a href="cliente_resultados.php" class="<?= basename($_SERVER['PHP_SELF'])=='cliente_resultados.php'?'active':'' ?>">📊</a>
+        <a href="cliente_ejercicios.php" class="<?= basename($_SERVER['PHP_SELF'])=='cliente_ejercicios.php'?'active':'' ?>">📚</a>
+    </div>
+</nav> 
