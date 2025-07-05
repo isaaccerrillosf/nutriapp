@@ -13,6 +13,9 @@ $nombre = $_SESSION['usuario_nombre'] ?? '';
             <span class="saludo-texto-cliente">¡Hola, <?= htmlspecialchars($nombre) ?>!</span>
         </div>
         <?php include 'cliente_carrusel.php'; ?>
+        <div style="margin-left:auto;">
+            <button id="darkToggle" style="background:none;border:none;font-size:1.6em;cursor:pointer;">🌙</button>
+        </div>
     </div>
 </header>
 
@@ -32,4 +35,14 @@ $nombre = $_SESSION['usuario_nombre'] ?? '';
         <a href="cliente_resultados.php" class="<?= basename($_SERVER['PHP_SELF'])=='cliente_resultados.php'?'active':'' ?>">📊</a>
         <a href="cliente_ejercicios.php" class="<?= basename($_SERVER['PHP_SELF'])=='cliente_ejercicios.php'?'active':'' ?>">📚</a>
     </div>
-</nav> 
+</nav>
+
+<script>
+const toggle=document.getElementById('darkToggle');
+if(toggle){
+  const setMode= (dark)=>{document.body.classList.toggle('dark-mode',dark);toggle.textContent=dark?'☀️':'🌙';localStorage.setItem('dark',dark?1:0);} ;
+  const darkStored=localStorage.getItem('dark')==='1';
+  setMode(darkStored);
+  toggle.addEventListener('click',()=>{setMode(!document.body.classList.contains('dark-mode'));});
+}
+</script> 

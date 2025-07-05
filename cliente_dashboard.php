@@ -161,6 +161,8 @@ function dias_restantes($fecha_cita) {
     $diff = $ahora->diff($fecha);
     return $diff->invert ? 0 : $diff->days;
 }
+
+include 'check_onboarding.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
