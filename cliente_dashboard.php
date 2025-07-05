@@ -1,4 +1,4 @@
-<?php
+THIS SHOULD BE A LINTER ERROR<?php
 session_start();
 if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'cliente') {
     header('Location: login.php');
@@ -69,6 +69,89 @@ if ($row = $result->fetch_assoc()) {
     $tiene_plan_hoy = $row['count'] > 0;
 }
 $stmt->close();
+
+// -------- NUEVAS CONSULTAS PARA TARJETAS DEL DASHBOARD --------
+// 1) Próximo entrenamiento
+$lista_dias = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+$dias_indices = array_flip($lista_dias); // 'Lunes' =>0, etc.
+$next_workout = 'No programado';
+
+// obtener dias con rutina
+$stmt = $conn->prepare('SELECT DISTINCT dia_semana FROM rutinas WHERE cliente_id = ?');
+$stmt->bind_param('i', $cliente_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$dias_rutina = [];
+while ($row = $result->fetch_assoc()) {
+    $dias_rutina[] = $row['dia_semana'];
+}
+$stmt->close();
+
+if (!empty($dias_rutina)) {
+    $hoy_idx = $dias_indices[$dia_actual];
+    for ($i = 0; $i < 7; $i++) {
+        $dia_idx = ($hoy_idx + $i) % 7;
+        $dia_nombre = $lista_dias[$dia_idx];
+        if (in_array($dia_nombre, $dias_rutina)) {
+            $next_workout = $i === 0 ? 'Hoy' : ($i === 1 ? 'Mañana' : $dia_nombre);
+            break;
+        }
+    }
+}
+
+// 2) Calorías consumidas hoy (placeholder si no existe tabla seguimiento de calorías)
+$calorias_hoy = '-';
+$stmt = $conn->prepare('SELECT SUM(calorias) as total FROM registro_calorias WHERE cliente_id=? AND fecha=?');
+if ($stmt) {
+    $stmt->bind_param('is', $cliente_id, $fecha_actual);
+    if ($stmt->execute()) {
+        $resCal = $stmt->get_result();
+        if ($row = $resCal->fetch_assoc()) {
+            $calorias_hoy = $row['total'] ? (int)$row['total'] : 0;
+        }
+    }
+    $stmt->close();
+}
+
+// 3) Progreso de peso corporal (último vs anterior)
+$peso_actual = null;
+$peso_anterior = null;
+$stmt = $conn->prepare('SELECT peso FROM resultados_cliente WHERE cliente_id=? AND peso IS NOT NULL ORDER BY fecha DESC LIMIT 2');
+$stmt->bind_param('i', $cliente_id);
+$stmt->execute();
+$resPeso = $stmt->get_result();
+$pesos = [];
+while ($row = $resPeso->fetch_assoc()) { $pesos[] = $row['peso']; }
+$stmt->close();
+if (count($pesos) > 0) { $peso_actual = $pesos[0]; }
+if (count($pesos) > 1) { $peso_anterior = $pesos[1]; }
+$peso_diff = null;
+if ($peso_actual !== null && $peso_anterior !== null) {
+    $peso_diff = $peso_actual - $peso_anterior;
+}
+
+// 4) Racha de días activos (seguimiento ejercicios)
+$racha_dias = 0;
+$stmt = $conn->prepare('SELECT DISTINCT fecha_ejercicio FROM seguimiento_ejercicios WHERE cliente_id=? AND completado=1 AND fecha_ejercicio <= ? ORDER BY fecha_ejercicio DESC LIMIT 30');
+$stmt->bind_param('is', $cliente_id, $fecha_actual);
+$stmt->execute();
+$resSeg = $stmt->get_result();
+$fechas = [];
+while ($row = $resSeg->fetch_assoc()) { $fechas[] = $row['fecha_ejercicio']; }
+$stmt->close();
+
+if (!empty($fechas)) {
+    $fecha_iter = new DateTime($fecha_actual);
+    foreach ($fechas as $fecha_db) {
+        if ($fecha_iter->format('Y-m-d') === $fecha_db) {
+            $racha_dias++;
+            $fecha_iter->modify('-1 day');
+        } else {
+            break;
+        }
+    }
+}
+// -------- FIN NUEVAS CONSULTAS --------
 
 $conn->close();
 
